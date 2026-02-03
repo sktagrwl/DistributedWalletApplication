@@ -42,17 +42,12 @@ public class DebitSourceWalletStep implements SagaStep{
 
         //Step 3 : Check if source wallet has enough balance to debit and if yes then Debit the source wallet by amount
 
-        if(wallet.getBalance().compareTo(amount) >= 0){
-            wallet.debit(amount);
-            walletRepository.save(wallet);
-            context.put("fromWalletbalanceAfterDebit", wallet.getBalance());
-            log.info("DebitSourceWalletStep executed successfully for walletId: {}", fromWalletId);
-        }else{
-            throw new RuntimeException("Insufficient balance in source wallet with id: " + fromWalletId);
-        }
+        wallet.debit(amount);
+        walletRepository.save(wallet);
 
+        context.put("fromWalletbalanceAfterDebit", wallet.getBalance());
+        
         log.info("Debited amount: {} from walletId: {}. New balance: {}", amount, wallet.getId(), wallet.getBalance());
-
 
         //Step 4 : Update the context with the changes
 
@@ -62,6 +57,7 @@ public class DebitSourceWalletStep implements SagaStep{
     }
 
     @Override
+    @Transactional
     public boolean compensate(SagaContext context) {
         //Step 1 : get Source wallet id and amount from context
 
@@ -83,8 +79,8 @@ public class DebitSourceWalletStep implements SagaStep{
 
         wallet.credit(amount);
         walletRepository.save(wallet);
-        
-        context.put("fromWalletbalanceAfterCredit", wallet.getBalance());
+
+        context.put("sourceWalletbalanceAfterCredit", wallet.getBalance());
        
         log.info("Credited amount: {} to walletId: {}. New balance: {}", amount, wallet.getId(), wallet.getBalance());
 
