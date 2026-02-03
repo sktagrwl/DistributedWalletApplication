@@ -1,7 +1,5 @@
 package com.example.Wallet.entities;
 
-import org.apache.calcite.sql.validate.SqlValidatorScope.Step;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
